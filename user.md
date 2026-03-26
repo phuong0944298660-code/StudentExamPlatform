@@ -56,6 +56,8 @@
 - 注释保持简洁，只需说明这部分代码的用途和基本逻辑
 
 ## 8. Git 分支与提交流程
+- 远程仓库地址为 `https://github.com/phuong0944298660-code/StudentExamPlatform.git`
+- 本地分支与远程分支映射如下：`develop` 对应 `origin/Develop`，`uat` 对应 `origin/UAT`，`master` 对应 `origin/main`
 - 仓库分支固定为 `develop`（开发分支）、`uat`（测试分支）、`master`（总分支/生产分支）
 - 日常代码变更后，必须自动提交到 `develop` 分支，并在提交信息中备注变更内容
 - 用户验证通过后，由助手先生成本次变更备注；用户确认并人工明确要求后，才可提交到 `uat` 分支
