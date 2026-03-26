@@ -1,0 +1,33 @@
+:root {
+  --text-main: #173d60;
+  --text-sub: #5e7f9b;
+  --line: #d9e8f5;
+  --panel-bg: #f8fcff;
+  --panel-shadow: 0 8px 24px rgba(19, 66, 104, 0.08);
+  font-family:
+    'Segoe UI',
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  color: var(--text-main);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f1f7fd;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
