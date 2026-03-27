@@ -200,128 +200,37 @@ examSystem/
 
 ### 4.2 角色菜单模块
 
-平台管理员、教师、评卷老师、学生使用的菜单不应完全相同。下面以树状路由结构列出各角色菜单模块，并附简要说明，便于侧边栏与路由实现保持一致。
+平台管理员、教师、评卷老师、学生使用的菜单不应完全相同。下面给出按角色拆分的菜单模块，实际开发时可在此基础上按权限做收敛。
 
 #### 4.2.1 平台管理员
 
-```text
-平台管理员/                    # frontend/src/pages/admin
-├── 总览看板/                  # route: /admin/dashboard
-│   ├── 看板概览/              # overview-metrics
-│   └── 待办任务/              # dashboard-todo
-├── 账号管理/                  # route: /admin/accounts
-│   ├── 账号列表/              # practice & exam accounts
-│   └── 策略配置/              # pricing or duration policies
-├── 激活管理/                  # route: /admin/activation
-│   ├── 码池管理/              # activation pool
-│   └── 激活记录/              # activation history
-├── 导入管理/                  # route: /admin/import
-│   ├── 名单导入/              # roster upload
-│   └── 名单补全/              # enrichment & mapping
-├── 题库管理/                  # route: /admin/question-bank
-│   ├── 目录管理/              # suites & taxonomy
-│   ├── 组卷管理/              # paper builder
-│   └── 题目管理/              # question CRUD
-├── 场次管理/                  # route: /admin/sessions
-│   ├── 场次配置/              # scheduling
-│   ├── 考场监控/              # live monitor
-│   └── 白名单管理/            # access control
-├── 资源管理/                  # route: /admin/resources
-│   ├── 资源中心/              # repository
-│   └── 资源分类/              # taxonomy
-├── 阅卷管理/                  # route: /admin/review
-│   ├── 阅卷任务/              # reviewer assignment
-│   └── 复核管理/              # double marking
-├── 成绩管理/                  # route: /admin/scores
-│   ├── 成绩查询/              # result lookup
-│   ├── 成绩导出/              # export interface
-│   └── 成绩发布/              # publish switch
-└── 留痕管理/                  # route: /admin/audit
-    ├── 日志审计/              # operation log
-    └── 意见反馈/              # feedback tickets
-```
+- 一级菜单：`总览看板`、`账号管理`、`激活管理`、`导入管理`、`题库管理`、`场次管理`、`资源管理`、`阅卷管理`、`成绩管理`、`留痕管理`
+- 二级菜单：`看板概览`、`待办任务`、`账号列表`、`策略配置`、`码池管理`、`激活记录`、`名单导入`、`名单补全`、`目录管理`、`组卷管理`、`题目管理`、`场次配置`、`考场监控`、`白名单管理`、`资源中心`、`资源分类`、`阅卷任务`、`复核管理`、`成绩查询`、`成绩导出`、`成绩发布`、`日志审计`、`意见反馈`
+- 页面落位：`frontend/src/pages/admin/`
 
 #### 4.2.2 教师
 
-```text
-教师端/                        # frontend/src/pages/teacher
-├── 总览看板/                  # route: /teacher/dashboard
-│   ├── 看板概览/              # key metrics
-│   └── 待办任务/              # personal todos
-├── 题库管理/                  # /teacher/question-bank
-│   ├── 目录管理/              # suites overview
-│   ├── 组卷管理/              # paper builder
-│   └── 题目管理/              # question library
-├── 资源管理/                  # /teacher/resources
-│   ├── 资源中心/              # shared assets
-│   └── 资源分类/              # tagging view
-├── 学情分析/                  # /teacher/learning
-│   ├── 学情概览/              # cohort metrics
-│   └── 统计分析/              # drill down
-└── 通知中心/                  # /teacher/notice
-    ├── 消息通知/              # inbox
-    └── 通知详情/              # message detail
-```
+- 一级菜单：`总览看板`、`题库管理`、`资源管理`、`学情分析`、`通知中心`
+- 二级菜单：`看板概览`、`目录管理`、`组卷管理`、`题目管理`、`资源中心`、`资源分类`、`学情概览`、`统计分析`、`消息通知`、`通知详情`
+- 页面落位：`frontend/src/pages/teacher/`
 
 #### 4.2.3 评卷老师
 
-```text
-评卷老师/                      # frontend/src/pages/reviewer
-├── 总览看板/                  # route: /reviewer/dashboard
-│   ├── 看板概览/              # assigned stats
-│   └── 待办任务/              # pending actions
-├── 阅卷管理/                  # /reviewer/review
-│   ├── 待评任务/              # queue
-│   └── 已评任务/              # finished papers
-├── 复核管理/                  # /reviewer/recheck
-│   └── 抽检复核/              # quality control
-└── 留痕记录/                  # /reviewer/audit
-    ├── 申诉处理/              # appeals workflow
-    └── 操作记录/              # activity log
-```
+- 一级菜单：`总览看板`、`阅卷管理`、`复核管理`、`留痕记录`
+- 二级菜单：`待评任务`、`已评任务`、`抽检复核`、`申诉处理`、`操作记录`
+- 页面落位：`frontend/src/pages/reviewer/`
 
 #### 4.2.4 学生（练习）
 
-```text
-学生练习/                      # frontend/src/pages/student/practice
-├── 总览看板/                  # route: /student/practice/dashboard
-│   ├── 看板概览/              # study metrics
-│   └── 待办任务/              # reminders
-├── 练习中心/                  # /student/practice/center
-│   ├── 刷题练习/              # quick drills
-│   └── 本卷训练/              # full mock
-├── 错题管理/                  # /student/practice/errors
-│   ├── 练习记录/              # attempt history
-│   └── 错题本/                # review list
-├── 资源中心/                  # /student/practice/resources
-│   └── 资源浏览/              # preview assets
-└── 学习结果/                  # /student/practice/result
-    └── 收藏管理/              # favorites
-```
+- 一级菜单：`总览看板`、`练习中心`、`错题管理`、`资源中心`、`学习结果`
+- 二级菜单：`刷题练习`、`本卷训练`、`练习记录`、`错题本`、`收藏管理`、`资源浏览`
+- 页面落位：`frontend/src/pages/student/practice/`
 
 #### 4.2.5 学生（考试）
 
-```text
-学生考试/                      # frontend/src/pages/student/exam
-├── 总览看板/                  # route: /student/exam/dashboard
-│   ├── 看板概览/              # exam status
-│   └── 待办任务/              # instructions
-├── 考试中心/                  # /student/exam/center
-│   └── 场次列表/              # eligible sessions
-├── 答题中心/                  # /student/exam/paper
-│   ├── 在线答题/              # exam workspace
-│   └── 提交确认/              # final confirm
-└── 成绩查询/                  # /student/exam/result
-    └── 结果查询/              # published scores
-```
-
-### 4.3 页面落位与实现提示
-
-- 平台管理员页面放在 `frontend/src/pages/admin/`
-- 教师页面放在 `frontend/src/pages/teacher/`
-- 评卷老师页面放在 `frontend/src/pages/reviewer/`
-- 学生练习页放在 `frontend/src/pages/student/practice/`
-- 学生考试页放在 `frontend/src/pages/student/exam/`
+- 一级菜单：`总览看板`、`考试中心`、`答题中心`、`成绩查询`
+- 二级菜单：`场次列表`、`在线答题`、`提交确认`、`结果查询`
+- 页面落位：`frontend/src/pages/student/exam/`
 
 ## 5. API 约定
 
