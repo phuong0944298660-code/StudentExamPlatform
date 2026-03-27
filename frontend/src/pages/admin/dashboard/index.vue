@@ -1,13 +1,585 @@
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import ModulePage from '../../../components/admin/ModulePage.vue'
-import { getAdminSectionView } from '../../../mock/admin'
+<template>
+  <div class="dashboard-page">
+    <!-- 页面标题 -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">看板概览</h1>
+        <p class="page-subtitle">欢迎回来，管理员！以下是系统实时数据概览</p>
+      </div>
+      <div class="page-actions">
+        <el-button type="primary" @click="refreshData">
+          <el-icon class="mr-2"><Refresh /></el-icon>
+          刷新数据
+        </el-button>
+      </div>
+    </div>
 
-const route = useRoute()
-const view = computed(() => getAdminSectionView('dashboard', String(route.meta.sectionKey ?? 'overview')))
+    <!-- 统计卡片 -->
+    <el-row :gutter="20" class="stats-row">
+      <el-col :span="6">
+        <div class="stat-card card-hover">
+          <div class="stat-icon blue">
+            <el-icon :size="24"><User /></el-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalAccounts }}</div>
+            <div class="stat-label">总账号数</div>
+          </div>
+          <div class="stat-trend up">
+            <el-icon><ArrowUp /></el-icon>
+            <span>+12%</span>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card card-hover">
+          <div class="stat-icon green">
+            <el-icon :size="24"><UserFilled /></el-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.todayLogin }}</div>
+            <div class="stat-label">今日登录</div>
+          </div>
+          <div class="stat-trend up">
+            <el-icon><ArrowUp /></el-icon>
+            <span>+8%</span>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card card-hover">
+          <div class="stat-icon orange">
+            <el-icon :size="24"><Calendar /></el-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.activeSessions }}</div>
+            <div class="stat-label">进行中场次</div>
+          </div>
+          <div class="stat-trend">
+            <span>实时</span>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="6">
+        <div class="stat-card card-hover">
+          <div class="stat-icon purple">
+            <el-icon :size="24"><Reading /></el-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.pendingReviews }}</div>
+            <div class="stat-label">待阅试卷</div>
+          </div>
+          <div class="stat-trend down">
+            <el-icon><ArrowDown /></el-icon>
+            <span>-5%</span>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+
+    <!-- 主要内容区 -->
+    <el-row :gutter="20" class="main-content">
+      <!-- 左侧：图表和场次状态 -->
+      <el-col :span="16">
+        <!-- 场次状态 -->
+        <el-card class="section-card">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">考试场次状态</span>
+              <el-button text type="primary" @click="$router.push('/admin/sessions')">
+                查看全部
+                <el-icon class="ml-1"><ArrowRight /></el-icon>
+              </el-button>
+            </div>
+          </template>
+          <el-table :data="examSessions" style="width: 100%">
+            <el-table-column prop="sessionName" label="场次名称" min-width="180" />
+            <el-table-column prop="stage" label="学段" width="100">
+              <template #default="{ row }">
+                <el-tag :type="row.stage === 'PRIMARY' ? 'success' : 'warning'" size="small">
+                  {{ row.stage === 'PRIMARY' ? '小学' : '初中' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="startTime" label="开始时间" width="160">
+              <template #default="{ row }">
+                {{ formatDate(row.startTime) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" width="100">
+              <template #default="{ row }">
+                <status-tag :status="row.status" />
+              </template>
+            </el-table-column>
+            <el-table-column prop="candidateCount" label="考生数" width="80" align="center" />
+            <el-table-column label="操作" width="120" fixed="right">
+              <template #default="{ row }">
+                <el-button link type="primary" @click="viewSession(row)">详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+
+        <!-- 快捷操作 -->
+        <el-card class="section-card mt-4">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">赛前准备快捷入口</span>
+            </div>
+          </template>
+          <div class="quick-actions">
+            <div 
+              v-for="action in quickActions" 
+              :key="action.path"
+              class="quick-action-item card-hover"
+              @click="$router.push(action.path)"
+            >
+              <div class="action-icon" :class="action.color">
+                <el-icon :size="24">
+                  <component :is="action.icon" />
+                </el-icon>
+              </div>
+              <div class="action-info">
+                <div class="action-title">{{ action.title }}</div>
+                <div class="action-desc">{{ action.desc }}</div>
+              </div>
+              <el-icon class="action-arrow"><ArrowRight /></el-icon>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+
+      <!-- 右侧：待办和动态 -->
+      <el-col :span="8">
+        <!-- 待办任务 -->
+        <el-card class="section-card">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">
+                待办任务
+                <el-badge :value="todoList.length" class="ml-2" />
+              </span>
+            </div>
+          </template>
+          <div class="todo-list">
+            <div 
+              v-for="todo in todoList" 
+              :key="todo.id"
+              class="todo-item"
+              :class="`priority-${todo.priority}`"
+            >
+              <div class="todo-dot"></div>
+              <div class="todo-content">
+                <div class="todo-title">{{ todo.title }}</div>
+                <div class="todo-meta">
+                  <span class="todo-deadline">
+                    <el-icon><Clock /></el-icon>
+                    {{ todo.deadline }}
+                  </span>
+                  <el-tag :type="getPriorityType(todo.priority)" size="small">
+                    {{ getPriorityLabel(todo.priority) }}
+                  </el-tag>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-card>
+
+        <!-- 最近动态 -->
+        <el-card class="section-card mt-4">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">最近动态</span>
+            </div>
+          </template>
+          <div class="activity-list">
+            <div 
+              v-for="activity in recentActivities" 
+              :key="activity.id"
+              class="activity-item"
+            >
+              <div class="activity-icon" :class="activity.type">
+                <el-icon>
+                  <component :is="getActivityIcon(activity.type)" />
+                </el-icon>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">{{ activity.content }}</div>
+                <div class="activity-time">{{ activity.time }}</div>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import StatusTag from '../../../components/common/StatusTag.vue'
+import { 
+  mockDashboardStats, 
+  mockExamSessions, 
+  mockTodoList, 
+  mockRecentActivities 
+} from '../../../mock/admin'
+import type { DashboardStats, ExamSession } from '../../../types'
+
+const router = useRouter()
+
+// 统计数据
+const stats = ref<DashboardStats>(mockDashboardStats)
+const examSessions = ref<ExamSession[]>(mockExamSessions.slice(0, 4))
+const todoList = ref(mockTodoList)
+const recentActivities = ref(mockRecentActivities)
+
+// 快捷操作
+const quickActions = [
+  { title: '导入名单', desc: '批量导入学生/教师信息', icon: 'Upload', path: '/admin/import', color: 'blue' },
+  { title: '生成激活码', desc: '创建新的激活码批次', icon: 'Key', path: '/admin/activation', color: 'green' },
+  { title: '创建场次', desc: '配置新的考试场次', icon: 'Calendar', path: '/admin/sessions', color: 'orange' },
+  { title: '组卷管理', desc: '配置考试/练习试卷', icon: 'DocumentCopy', path: '/admin/question-bank/paper', color: 'purple' },
+]
+
+// 刷新数据
+const refreshData = () => {
+  // 模拟刷新
+  stats.value = { ...mockDashboardStats }
+}
+
+// 查看场次详情
+const viewSession = (row: ExamSession) => {
+  router.push(`/admin/sessions`)
+}
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleString('zh-CN', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+// 获取优先级类型
+const getPriorityType = (priority: string) => {
+  const map: Record<string, string> = {
+    high: 'danger',
+    medium: 'warning',
+    low: 'info'
+  }
+  return map[priority] || 'info'
+}
+
+// 获取优先级标签
+const getPriorityLabel = (priority: string) => {
+  const map: Record<string, string> = {
+    high: '紧急',
+    medium: '普通',
+    low: '低'
+  }
+  return map[priority] || priority
+}
+
+// 获取活动图标
+const getActivityIcon = (type: string) => {
+  const map: Record<string, string> = {
+    session: 'Calendar',
+    import: 'Upload',
+    paper: 'DocumentCopy',
+    activation: 'Key',
+    review: 'Reading'
+  }
+  return map[type] || 'InfoFilled'
+}
+
+onMounted(() => {
+  // 页面加载时的初始化
+})
 </script>
 
-<template>
-  <ModulePage :view="view" />
-</template>
+<style scoped>
+.dashboard-page {
+  padding-bottom: 40px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0 0 8px 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0;
+}
+
+.page-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.stat-icon.blue { background: linear-gradient(135deg, #3B82F6, #6366F1); }
+.stat-icon.green { background: linear-gradient(135deg, #10B981, #059669); }
+.stat-icon.orange { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.stat-icon.purple { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stat-trend.up {
+  color: #10B981;
+}
+
+.stat-trend.down {
+  color: #EF4444;
+}
+
+.main-content {
+  margin-top: 0;
+}
+
+.section-card {
+  border-radius: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.quick-action-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.quick-action-item:hover {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.action-icon.blue { background: linear-gradient(135deg, #3B82F6, #6366F1); }
+.action-icon.green { background: linear-gradient(135deg, #10B981, #059669); }
+.action-icon.orange { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.action-icon.purple { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+
+.action-info {
+  flex: 1;
+}
+
+.action-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 4px;
+}
+
+.action-desc {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.action-arrow {
+  color: #94a3b8;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.todo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.priority-high .todo-dot { background: #EF4444; }
+.priority-medium .todo-dot { background: #F59E0B; }
+.priority-low .todo-dot { background: #3B82F6; }
+
+.todo-content {
+  flex: 1;
+}
+
+.todo-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1E293B;
+  margin-bottom: 8px;
+}
+
+.todo-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.todo-deadline {
+  font-size: 12px;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.activity-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.activity-icon.session { color: #3B82F6; background: rgba(59, 130, 246, 0.1); }
+.activity-icon.import { color: #10B981; background: rgba(16, 185, 129, 0.1); }
+.activity-icon.paper { color: #8B5CF6; background: rgba(139, 92, 246, 0.1); }
+.activity-icon.activation { color: #F59E0B; background: rgba(245, 158, 11, 0.1); }
+.activity-icon.review { color: #EF4444; background: rgba(239, 68, 68, 0.1); }
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-text {
+  font-size: 14px;
+  color: #1E293B;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
+.ml-1 {
+  margin-left: 4px;
+}
+
+.ml-2 {
+  margin-left: 8px;
+}
+</style>
