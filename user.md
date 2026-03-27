@@ -50,9 +50,9 @@
 - 后续任何开发任务（前端、后端、数据库、服务、接口联调）都必须以最新版 `exam-platform-requirements-spec` 文档为准执行
 - 若开发内容与旧版文档冲突，以最新版需求文档为唯一准入依据
 - 如果涉及系统架构变更，则同步更新 `architecture.md` 文档，禁止直接覆盖历史版本
-- 当前需求基线文件更新为 `docs/exam-platform-requirements-spec-v1.3.md`
+- 当前需求基线文件更新为 `docs/exam-platform-requirements-spec-v1.4.md`
 
 ## 8. UI 与技术栈执行规则
-- 前端开发必须遵循 `docs/design-system-v1.1.md`
+- 前端开发必须遵循 `docs/design-system-v1.2.md`
 - 编程开发必须严格遵循 `docs/tech-stack.md`
 - 若 UI 设计规范或技术栈发生变化，必须先更新对应版本文档，再开始开发实现

@@ -1,12 +1,12 @@
-# 接力教育智慧云平台 - 系统架构与目录结构规范（V1.10）
+# 接力教育智慧云平台 - 系统架构与目录结构规范（V1.8）
 
 ## 1. 文档信息
 
-- 架构版本：`v1.10`
+- 架构版本：`v1.8`
 - 对齐需求：`docs/exam-platform-requirements-spec-v1.4.md`
 - UI 规范：`docs/design-system-v1.2.md`
 - 技术栈：`docs/tech-stack.md`
-- 更新时间：`2026-03-27 14:07:58`
+- 更新时间：`2026-03-27 13:55:44`
 
 本文件用于统一约束项目的系统分层、目录放置、页面与组件归档、左侧菜单命名、API 约定以及数据库结构。后续所有前端、后端、数据库相关开发，默认以本文件为准。
 
@@ -189,7 +189,7 @@ examSystem/
 | 题库管理 | 目录管理 / 组卷管理 / 题目管理 | 题库、试题、组卷 |
 | 场次管理 | 场次配置 / 考场监控 / 白名单管理 | 场次、时间、准入控制 |
 | 资源管理 | 资源中心 / 资源分类 | 资源文件、目录管理 |
-| 阅卷管理 | 阅卷任务 / 复核管理 / 凭证留存 | 主观题评卷、复核、评分表留存 |
+| 阅卷管理 | 阅卷任务 / 复核管理 | 主观题评卷、复核 |
 | 成绩管理 | 成绩查询 / 成绩导出 / 成绩发布 | 成绩查看、导出、发布 |
 | 留痕管理 | 日志审计 / 意见反馈 | 操作日志、反馈工单 |
 
@@ -233,8 +233,7 @@ examSystem/
 │   └── 资源分类/              # taxonomy
 ├── 阅卷管理/                  # route: /admin/review
 │   ├── 阅卷任务/              # reviewer assignment
-│   ├── 复核管理/              # double marking
-│   └── 凭证留存/              # scanned review sheets
+│   └── 复核管理/              # double marking
 ├── 成绩管理/                  # route: /admin/scores
 │   ├── 成绩查询/              # result lookup
 │   ├── 成绩导出/              # export interface
@@ -249,7 +248,7 @@ examSystem/
 ```text
 教师端/                        # frontend/src/pages/teacher
 ├── 总览看板/                  # route: /teacher/dashboard
-│   ├── 看板概览/              # key metrics & quick paper builder
+│   ├── 看板概览/              # key metrics
 │   └── 待办任务/              # personal todos
 ├── 题库管理/                  # /teacher/question-bank
 │   ├── 目录管理/              # suites overview
@@ -271,16 +270,15 @@ examSystem/
 ```text
 评卷老师/                      # frontend/src/pages/reviewer
 ├── 总览看板/                  # route: /reviewer/dashboard
-│   ├── 看板概览/              # assigned stats & recheck alerts
+│   ├── 看板概览/              # assigned stats
 │   └── 待办任务/              # pending actions
 ├── 阅卷管理/                  # /reviewer/review
 │   ├── 待评任务/              # queue
-│   ├── 已评任务/              # finished papers
-│   └── 凭证留存/              # upload scanned review sheets
+│   └── 已评任务/              # finished papers
 ├── 复核管理/                  # /reviewer/recheck
-│   ├── 抽检复核/              # quality control
-│   └── 申诉处理/              # recheck applications
+│   └── 抽检复核/              # quality control
 └── 留痕记录/                  # /reviewer/audit
+    ├── 申诉处理/              # appeals workflow
     └── 操作记录/              # activity log
 ```
 
@@ -326,13 +324,6 @@ examSystem/
 - 评卷老师页面放在 `frontend/src/pages/reviewer/`
 - 学生练习页放在 `frontend/src/pages/student/practice/`
 - 学生考试页放在 `frontend/src/pages/student/exam/`
-
-### 4.4 关键页面能力
-
-- 教师端 `总览看板/看板概览` 必须提供“快捷组卷入口”，并直接跳转到 `题库管理/组卷管理`。
-- 评卷老师端 `总览看板/看板概览` 必须提供“待处理复查申请”高亮提醒，并直接跳转到 `复核管理/申诉处理`。
-- 评卷老师端与平台管理员端都必须支持“纸质评分表扫描件留存”，对应页面统一落在 `阅卷管理/凭证留存`。
-- `阅卷管理/凭证留存` 负责评分表扫描件上传、关联试卷、留痕归档与预览查看。
 
 ## 5. API 约定
 
