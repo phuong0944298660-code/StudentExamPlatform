@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>接力教育智慧云平台 - UI设计规范</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            'primary-dark': '#2563EB',
+            accent: '#6366F1',
+            success: '#10B981',
+            error: '#EF4444',
+            warning: '#F59E0B',
+            'text-primary': '#1E293B',
+            'text-secondary': '#64748B',
+            'app-bg': '#F8FAFC',
+            'card-bg': '#FFFFFF',
+          },
+          fontFamily: {
+            sans: ['"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', 'sans-serif'],
+            number: ['"Nunito"', '"Roboto"', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #F8FAFC;
+      color: #1E293B;
+      line-height: 1.6;
+    }
+    
+    /* 侧边栏样式 */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .sidebar-subtitle {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .nav-item {
+      display: block;
+      padding: 14px 20px;
+      color: #94a3b8;
+      text-decoration: none;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+    .nav-item.active {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3B82F6;
+      border-left-color: #3B82F6;
+    }
+    
+    /* 主内容区 */
+    .main-content {
+      margin-left: 260px;
+      padding: 40px;
+      max-width: 1200px;
+    }
+    
+    /* 组件展示卡片 */
+    .component-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .component-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1E293B;
+      margin-bottom: 8px;
+    }
+    .component-desc {
+      color: #64748B;
+      margin-bottom: 24px;
+    }
+    
+    /* 代码展示 */
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+    .code-label {
+      font-size: 12px;
+      color: #64748B;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* 色块展示 */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .color-item {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .color-preview {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .color-info {
+      padding: 12px;
+      background: white;
+    }
+    .color-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1E293B;
+    }
+    .color-value {
+      font-size: 12px;
+      color: #64748B;
+      font-family: monospace;
+    }
+    
+    /* 按钮样式 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 20px;
+      height: 40px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-primary {
+      background: #3B82F6;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #2563EB;
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    }
+    .btn-success {
+      background: #10B981;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+    .btn-warning {
+      background: #F59E0B;
+      color: white;
+    }
+    .btn-danger {
+      background: #EF4444;
+      color: white;
+    }
+    .btn-default {
+      background: white;
+      color: #1E293B;
+      border: 1px solid #e2e8f0;
+    }
+    .btn-default:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .btn-large {
+      height: 48px;
+      padding: 0 28px;
+      font-size: 15px;
+    }
+    .btn-small {
+      height: 32px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    
+    /* 输入框样式 */
+    .input {
+      width: 100%;
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .input:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .input::placeholder {
+      color: #94a3b8;
+    }
+    
+    /* 标签样式 */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .tag-primary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3B82F6;
+    }
+    .tag-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10B981;
+    }
+    .tag-warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: #F59E0B;
+    }
+    .tag-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #EF4444;
+    }
+    
+    /* 表格样式 */
+    .table-container {
+      overflow-x: auto;
+    }
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .table th,
+    .table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .table th {
+      background: #f8fafc;
+      font-weight: 600;
+      font-size: 13px;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .table tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* 卡片样式 */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    
+    /* 答题矩阵 */
+    .question-matrix {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      max-width: 300px;
+    }
+    .matrix-item {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .matrix-item.unanswered {
+      background: white;
+      border: 1px solid #cbd5e1;
+      color: #64748B;
+    }
+    .matrix-item.answered {
+      background: #3B82F6;
+      color: white;
+      border: 1px solid #3B82F6;
+    }
+    .matrix-item.current {
+      background: #3B82F6;
+      color: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* 上传区域 */
+    .upload-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .upload-area:hover {
+      border-color: #3B82F6;
+      background: rgba(59, 130, 246, 0.02);
+    }
+    .upload-area.dragover {
+      border-color: #3B82F6;
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    /* 统计卡片 */
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1E293B;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: #64748B;
+      margin-top: 4px;
+    }
+    
+    /* 导航样式 */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .nav-tab {
+      padding: 12px 20px;
+      font-size: 14px;
+      color: #64748B;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover {
+      color: #3B82F6;
+    }
+    .nav-tab.active {
+      color: #3B82F6;
+      border-bottom-color: #3B82F6;
+      font-weight: 500;
+    }
+    
+    /* 进度条 */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3B82F6, #6366F1);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    /* 面包屑 */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .breadcrumb-item {
+      color: #64748B;
+    }
+    .breadcrumb-item.active {
+      color: #1E293B;
+      font-weight: 500;
+    }
+    .breadcrumb-separator {
+      color: #cbd5e1;
+    }
+    
+    /* 分页 */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .page-btn {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: transparent;
+      color: #64748B;
+    }
+    .page-btn:hover {
+      background: #f1f5f9;
+    }
+    .page-btn.active {
+      background: #3B82F6;
+      color: white;
+    }
+    
+    /* 水印效果 */
+    .watermark-demo {
+      position: relative;
+      background: white;
+      border-radius: 12px;
+      padding: 60px 40px;
+      overflow: hidden;
+    }
+    .watermark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        -30deg,
+        transparent,
+        transparent 100px,
+        rgba(0,0,0,0.03) 100px,
+        rgba(0,0,0,0.03) 130px
+      );
+    }
+    .watermark-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 48px;
+      color: rgba(0,0,0,0.08);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    /* 示例网格 */
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .example-item {
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .example-label {
+      font-size: 12px;
+      color: #64748B;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 侧边栏导航 -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">接力教育</div>
+      <div class="sidebar-subtitle">UI 设计规范 v1.2</div>
+    </div>
+    <a href="#colors" class="nav-item active" onclick="scrollToSection('colors')">色彩系统</a>
+    <a href="#typography" class="nav-item" onclick="scrollToSection('typography')">字体排版</a>
+    <a href="#buttons" class="nav-item" onclick="scrollToSection('buttons')">按钮组件</a>
+    <a href="#forms" class="nav-item" onclick="scrollToSection('forms')">表单组件</a>
+    <a href="#tags" class="nav-item" onclick="scrollToSection('tags')">标签组件</a>
+    <a href="#tables" class="nav-item" onclick="scrollToSection('tables')">表格组件</a>
+    <a href="#cards" class="nav-item" onclick="scrollToSection('cards')">卡片组件</a>
+    <a href="#navigation" class="nav-item" onclick="scrollToSection('navigation')">导航组件</a>
+    <a href="#special" class="nav-item" onclick="scrollToSection('special')">特殊组件</a>
+    <a href="#examples" class="nav-item" onclick="scrollToSection('examples')">页面示例</a>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 标题区 -->
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-size: 32px; font-weight: 700; color: #1E293B; margin-bottom: 8px;">
+        UI 设计规范
+      </h1>
+      <p style="color: #64748B; font-size: 16px;">
+        接力教育智慧云平台 - 清晰护眼、现代活力、专注聚焦
+      </p>
+    </div>
+
+    <!-- 色彩系统 -->
+    <section id="colors" class="component-card">
+      <h2 class="component-title">色彩系统</h2>
+      <p class="component-desc">采用柔和护眼的莫兰迪色系，保护中小学生视力</p>
+      
+      <h3 style="font-size: 16px; font-weight: 600; margin: 24px 0 16px;">品牌色</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background: #3B82F6; color: white;">Primary</div>
+          <div class="color-info">
+            <div class="color-name">主色调</div>
+            <div class="color-value">#3B82F6 (blue-500)</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: #6366F1; color: white;">Accent</div>
+          <div class="color-info">
+            <div class="color-name">辅助色</div>
+            <div class="color-value">#6366F1 (indigo-500)</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 16px; font-weight: 600; margin: 24px 0 16px;">语义色</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background: #10B981; color: white;">Success</div>
+          <div class="color-info">
+            <div class="color-name">成功</div>
+            <div class="color-value">#10B981</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: #EF4444; color: white;">Error</div>
+          <div class="color-info">
+            <div class="color-name">错误</div>
+            <div class="color-value">#EF4444</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: #F59E0B; color: white;">Warning</div>
+          <div class="color-info">
+            <div class="color-name">警告</div>
+            <div class="color-value">#F59E0B</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 16px; font-weight: 600; margin: 24px 0 16px;">中性色</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background: #1E293B; color: white;">Text Primary</div>
+          <div class="color-info">
+            <div class="color-name">主要文字</div>
+            <div class="color-value">#1E293B</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: #64748B; color: white;">Text Secondary</div>
+          <div class="color-info">
+            <div class="color-name">次要文字</div>
+            <div class="color-value">#64748B</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: #F8FAFC; color: #1E293B; border: 1px solid #e2e8f0;">Background</div>
+          <div class="color-info">
+            <div class="color-name">应用背景</div>
+            <div class="color-value">#F8FAFC</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">Tailwind Config</div>
+      <div class="code-block">colors: {
+  primary: '#3B82F6',
+  'primary-dark': '#2563EB',
+  accent: '#6366F1',
+  success: '#10B981',
+  error: '#EF4444',
+  warning: '#F59E0B',
+  'text-primary': '#1E293B',
+  'text-secondary': '#64748B',
+  'app-bg': '#F8FAFC',
+}</div>
+    </section>
+
+    <!-- 字体排版 -->
+    <section id="typography" class="component-card">
+      <h2 class="component-title">字体排版</h2>
+      <p class="component-desc">针对 K-12 学生，基础字号比常规后台系统大一号</p>
+      
+      <div style="background: #f8fafc; padding: 24px; border-radius: 8px;">
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 24px; font-weight: 600; color: #1E293B; margin-bottom: 4px;">H1 大标题 / 24px / Weight 600</div>
+          <div style="font-size: 12px; color: #64748B;">用于页面标题、考试名称</div>
+        </div>
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 20px; font-weight: 600; color: #1E293B; margin-bottom: 4px;">H2 模块标题 / 20px / Weight 600</div>
+          <div style="font-size: 12px; color: #64748B;">用于大题题干、卡片标题</div>
+        </div>
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 16px; font-weight: 400; line-height: 1.6; color: #1E293B; margin-bottom: 4px;">Base 基础正文 / 16px / Weight 400 / Line 1.6</div>
+          <div style="font-size: 12px; color: #64748B;">用于小题题干、正文内容，确保长时间阅读不疲劳</div>
+        </div>
+        <div>
+          <div style="font-size: 14px; font-weight: 400; color: #1E293B; margin-bottom: 4px;">Small 辅助信息 / 14px / Weight 400</div>
+          <div style="font-size: 12px; color: #64748B;">用于标签、辅助说明</div>
+        </div>
+      </div>
+
+      <div class="code-label">Font Family</div>
+      <div class="code-block">font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;</div>
+    </section>
+
+    <!-- 按钮组件 -->
+    <section id="buttons" class="component-card">
+      <h2 class="component-title">按钮组件</h2>
+      <p class="component-desc">圆角 8px，高度 40px（主操作 48px），悬浮时颜色加深并添加阴影</p>
+      
+      <div class="example-grid">
+        <div class="example-item">
+          <div class="example-label">主要按钮</div>
+          <button class="btn btn-primary">主要按钮</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">成功按钮</div>
+          <button class="btn btn-success">成功按钮</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">警告按钮</div>
+          <button class="btn btn-warning">警告按钮</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">危险按钮</div>
+          <button class="btn btn-danger">危险按钮</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">默认按钮</div>
+          <button class="btn btn-default">默认按钮</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">大尺寸 (48px)</div>
+          <button class="btn btn-primary btn-large">提交试卷</button>
+        </div>
+        <div class="example-item">
+          <div class="example-label">小尺寸 (32px)</div>
+          <button class="btn btn-primary btn-small">小按钮</button>
+        </div>
+      </div>
+
+      <div class="code-label">CSS</div>
+      <div class="code-block">.btn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: #3B82F6;
+}
+.btn-primary:hover {
+  background: #2563EB;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}</div>
+    </section>
+
+    <!-- 表单组件 -->
+    <section id="forms" class="component-card">
+      <h2 class="component-title">表单组件</h2>
+      <p class="component-desc">输入框圆角 8px，高度 40px，聚焦时显示蓝色边框和阴影</p>
+      
+      <div class="example-grid">
+        <div class="example-item">
+          <div class="example-label">基础输入框</div>
+          <input type="text" class="input" placeholder="请输入内容">
+        </div>
+        <div class="example-item">
+          <div class="example-label">禁用状态</div>
+          <input type="text" class="input" placeholder="禁用状态" disabled style="background: #f1f5f9; cursor: not-allowed;">
+        </div>
+        <div class="example-item">
+          <div class="example-label">带图标的输入框</div>
+          <div style="position: relative;">
+            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;">🔍</span>
+            <input type="text" class="input" placeholder="搜索..." style="padding-left: 36px;">
+          </div>
+        </div>
+        <div class="example-item">
+          <div class="example-label">下拉选择</div>
+          <select class="input" style="cursor: pointer;">
+            <option>选项一</option>
+            <option>选项二</option>
+            <option>选项三</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; background: #f8fafc; padding: 20px; border-radius: 8px;">
+        <div class="example-label">表单布局示例</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+          <div>
+            <label style="display: block; font-size: 14px; color: #1E293B; margin-bottom: 8px;">用户名</label>
+            <input type="text" class="input" placeholder="请输入用户名">
+          </div>
+          <div>
+            <label style="display: block; font-size: 14px; color: #1E293B; margin-bottom: 8px;">邮箱</label>
+            <input type="email" class="input" placeholder="请输入邮箱">
+          </div>
+          <div style="grid-column: span 2;">
+            <label style="display: block; font-size: 14px; color: #1E293B; margin-bottom: 8px;">备注</label>
+            <textarea class="input" rows="3" placeholder="请输入备注" style="height: auto; padding: 12px;"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 标签组件 -->
+    <section id="tags" class="component-card">
+      <h2 class="component-title">标签组件</h2>
+      <p class="component-desc">用于状态标识，小号圆角 6px，带背景色的文字标签</p>
+      
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <span class="tag tag-primary">生效中</span>
+        <span class="tag tag-success">已完成</span>
+        <span class="tag tag-warning">待处理</span>
+        <span class="tag tag-error">已过期</span>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="example-label">使用场景示例</div>
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 14px; color: #1E293B;">2026年小学组初赛</span>
+            <span class="tag tag-success">进行中</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">CSS</div>
+      <div class="code-block">.tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.tag-primary {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}</div>
+    </section>
+
+    <!-- 表格组件 -->
+    <section id="tables" class="component-card">
+      <h2 class="component-title">表格组件</h2>
+      <p class="component-desc">表头灰色背景，字体 13px 大写，行悬浮高亮</p>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>姓名</th>
+              <th>学校</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>001</td>
+              <td>张三</td>
+              <td>南宁市第一小学</td>
+              <td><span class="tag tag-primary">生效中</span></td>
+              <td><button class="btn btn-small" style="background: transparent; color: #3B82F6; padding: 0;">编辑</button></td>
+            </tr>
+            <tr>
+              <td>002</td>
+              <td>李四</td>
+              <td>南宁市第二小学</td>
+              <td><span class="tag tag-success">已完成</span></td>
+              <td><button class="btn btn-small" style="background: transparent; color: #3B82F6; padding: 0;">编辑</button></td>
+            </tr>
+            <tr>
+              <td>003</td>
+              <td>王五</td>
+              <td>南宁市第三小学</td>
+              <td><span class="tag tag-warning">待处理</span></td>
+              <td><button class="btn btn-small" style="background: transparent; color: #3B82F6; padding: 0;">编辑</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">HTML Structure</div>
+      <div class="code-block">&lt;table class="table"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;ID&lt;/th&gt;
+      &lt;th&gt;姓名&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;001&lt;/td&gt;
+      &lt;td&gt;张三&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</div>
+    </section>
+
+    <!-- 卡片组件 -->
+    <section id="cards" class="component-card">
+      <h2 class="component-title">卡片组件</h2>
+      <p class="component-desc">圆角 12px，白色背景，细微阴影，可用于内容区块</p>
+      
+      <div class="example-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">卡片标题</span>
+            <button class="btn btn-small btn-primary">操作</button>
+          </div>
+          <p style="color: #64748B; font-size: 14px;">卡片内容区域，可用于展示各类信息模块。</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #3B82F6, #6366F1);">
+            <span style="font-size: 24px;">👥</span>
+          </div>
+          <div>
+            <div class="stat-value">3,256</div>
+            <div class="stat-label">总账号数</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #10B981, #059669);">
+            <span style="font-size: 24px;">✓</span>
+          </div>
+          <div>
+            <div class="stat-value">892</div>
+            <div class="stat-label">今日登录</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">CSS</div>
+      <div class="code-block">.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}</div>
+    </section>
+
+    <!-- 导航组件 -->
+    <section id="navigation" class="component-card">
+      <h2 class="component-title">导航组件</h2>
+      <p class="component-desc">选项卡导航、面包屑、分页等导航元素</p>
+      
+      <div style="margin-bottom: 32px;">
+        <div class="example-label">选项卡导航</div>
+        <div class="nav-tabs">
+          <div class="nav-tab active">账号管理</div>
+          <div class="nav-tab">题库管理</div>
+          <div class="nav-tab">场次管理</div>
+          <div class="nav-tab">成绩管理</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 32px;">
+        <div class="example-label">面包屑</div>
+        <div class="breadcrumb" style="margin-top: 12px;">
+          <span class="breadcrumb-item">首页</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item">账号管理</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item active">账号列表</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-label">分页</div>
+        <div class="pagination" style="margin-top: 12px;">
+          <button class="page-btn">&lt;</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">...</button>
+          <button class="page-btn">10</button>
+          <button class="page-btn">&gt;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 特殊组件 -->
+    <section id="special" class="component-card">
+      <h2 class="component-title">特殊组件</h2>
+      <p class="component-desc">考试场景专用组件：答题矩阵、上传区域、水印、进度条</p>
+      
+      <div class="example-grid">
+        <div class="example-item">
+          <div class="example-label">答题矩阵</div>
+          <div class="question-matrix" style="margin-top: 12px;">
+            <div class="matrix-item answered">1</div>
+            <div class="matrix-item answered">2</div>
+            <div class="matrix-item current">3</div>
+            <div class="matrix-item unanswered">4</div>
+            <div class="matrix-item unanswered">5</div>
+            <div class="matrix-item unanswered">6</div>
+            <div class="matrix-item unanswered">7</div>
+            <div class="matrix-item unanswered">8</div>
+            <div class="matrix-item unanswered">9</div>
+            <div class="matrix-item unanswered">10</div>
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color: #64748B;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; margin-right: 12px;">
+              <span style="width: 12px; height: 12px; background: #3B82F6; border-radius: 3px;"></span> 已答
+            </span>
+            <span style="display: inline-flex; align-items: center; gap: 4px;">
+              <span style="width: 12px; height: 12px; border: 1px solid #cbd5e1; border-radius: 3px;"></span> 未答
+            </span>
+          </div>
+        </div>
+
+        <div class="example-item">
+          <div class="example-label">上传区域</div>
+          <div class="upload-area" style="margin-top: 12px; padding: 32px 16px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">📁</div>
+            <div style="color: #64748B; font-size: 14px;">
+              <span style="color: #3B82F6;">点击上传</span> 或拖拽文件到此处
+            </div>
+          </div>
+        </div>
+
+        <div class="example-item">
+          <div class="example-label">进度条</div>
+          <div style="margin-top: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748B; margin-bottom: 8px;">
+              <span>评卷进度</span>
+              <span>78%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 78%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="example-label">防作弊水印</div>
+        <div class="watermark-demo" style="margin-top: 12px;">
+          <div class="watermark"></div>
+          <div class="watermark-text">张三 1234</div>
+          <div style="position: relative; z-index: 1; text-align: center; color: #64748B;">
+            <p>考试内容区域</p>
+            <p style="font-size: 14px;">水印透明度 8%，倾斜 -30°，pointer-events: none</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页面示例 -->
+    <section id="examples" class="component-card">
+      <h2 class="component-title">页面布局示例</h2>
+      <p class="component-desc">常用页面布局组合</p>
+      
+      <div style="background: #f8fafc; border-radius: 8px; padding: 24px;">
+        <!-- 页面头部示例 -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h3 style="font-size: 20px; font-weight: 600; color: #1E293B; margin-bottom: 4px;">账号列表</h3>
+            <p style="font-size: 14px; color: #64748B;">管理所有学生训练账号、考试账号和教师账号</p>
+          </div>
+          <button class="btn btn-primary">
+            <span>+</span> 创建账号
+          </button>
+        </div>
+
+        <!-- 筛选栏示例 -->
+        <div style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 24px; display: flex; gap: 12px;">
+          <select class="input" style="width: 140px;">
+            <option>全部类型</option>
+            <option>训练账号</option>
+            <option>考试账号</option>
+          </select>
+          <select class="input" style="width: 140px;">
+            <option>全部学段</option>
+            <option>小学</option>
+            <option>初中</option>
+          </select>
+          <input type="text" class="input" placeholder="搜索姓名" style="width: 200px;">
+          <button class="btn btn-primary">搜索</button>
+          <button class="btn btn-default">重置</button>
+        </div>
+
+        <!-- 表格示例 -->
+        <div class="table-container" style="background: white; border-radius: 8px;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>真实姓名</th>
+                <th>账号类型</th>
+                <th>学段</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>stu001</td>
+                <td>张三</td>
+                <td><span class="tag tag-primary">训练账号</span></td>
+                <td>小学</td>
+                <td><span class="tag tag-success">正常</span></td>
+                <td><button class="btn btn-small" style="background: transparent; color: #3B82F6; padding: 0;">编辑</button></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>450102...</td>
+                <td>李四</td>
+                <td><span class="tag" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">考试账号</span></td>
+                <td>初中</td>
+                <td><span class="tag tag-success">正常</span></td>
+                <td><button class="btn btn-small" style="background: transparent; color: #3B82F6; padding: 0;">编辑</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 分页 -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+          <div class="pagination">
+            <button class="page-btn">&lt;</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">&gt;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设计原则总结 -->
+    <section class="component-card" style="background: linear-gradient(135deg, #3B82F6, #6366F1); color: white;">
+      <h2 class="component-title" style="color: white;">设计原则</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 24px;">
+        <div>
+          <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">🎯 清晰护眼</h4>
+          <p style="font-size: 14px; opacity: 0.9;">使用柔和的莫兰迪色系，避免高饱和刺眼颜色，保护学生视力</p>
+        </div>
+        <div>
+          <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">✨ 现代活力</h4>
+          <p style="font-size: 14px; opacity: 0.9;">圆润的圆角设计，适中的阴影，营造现代感而不呆板</p>
+        </div>
+        <div>
+          <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">🎯 专注聚焦</h4>
+          <p style="font-size: 14px; opacity: 0.9;">克制的动画效果，清晰的视觉层级，帮助用户专注任务</p>
+        </div>
+        <div>
+          <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">📐 统一规范</h4>
+          <p style="font-size: 14px; opacity: 0.9;">基于 4px 网格系统，保持间距、圆角、字号的一致性</p>
+        </div>
+      </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px 0; color: #64748B; font-size: 14px;">
+      <p>接力教育智慧云平台 UI 设计规范 v1.2</p>
+      <p style="margin-top: 4px;">© 2026 接力教育 · 清晰护眼 · 现代活力 · 专注聚焦</p>
+    </footer>
+  </main>
+
+  <script>
+    // 导航滚动
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      // 更新活跃状态
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    // 选项卡交互
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // 答题矩阵交互
+    document.querySelectorAll('.matrix-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.matrix-item').forEach(i => i.classList.remove('current'));
+        this.classList.add('current');
+        this.classList.remove('unanswered');
+        this.classList.add('answered');
+      });
+    });
+
+    // 分页交互
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (!this.textContent.includes('<') && !this.textContent.includes('>')) {
+          this.parentElement.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // 上传区域拖拽效果
+    const uploadArea = document.querySelector('.upload-area');
+    if (uploadArea) {
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+      });
+    }
+
+    // 滚动监听更新导航
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section[id]');
+      const scrollPos = window.scrollY + 100;
+      
+      sections.forEach(section => {
+        if (scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
+          document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === '#' + section.id) {
+              item.classList.add('active');
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
