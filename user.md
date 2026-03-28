@@ -56,3 +56,147 @@
 - 前端开发必须遵循 `docs/design-system-v1.2.md`
 - 编程开发必须严格遵循 `docs/tech-stack.md`
 - 若 UI 设计规范或技术栈发生变化，必须先更新对应版本文档，再开始开发实现
+
+## 9. UI 开发工作规范（永久记忆）
+
+**核心原则：设计系统（Design System）是单一数据源（Single Source of Truth）**
+
+所有前端开发必须遵循 `docs/design-system-v*.md` 文档规范。
+
+### 9.1 标准开发流程（无冲突时）
+```
+需求 → 查阅 design-system → 按规范开发 → 自检查 → 提交
+```
+
+### 9.2 UI 调整需求与文档冲突时（强制流程）
+
+当用户提出的 UI 调整需求与现有 design-system 文档冲突时，**必须**执行以下流程：
+
+```
+用户提出 UI 调整需求
+        ↓
+发现与 design-system 冲突
+        ↓
+【必须】先实现调整样式
+        ↓
+【必须】向用户展示实际样式效果
+        ↓
+【必须】等待用户明确确认
+        ↓
+用户确认后
+        ↓
+├─→ 更新 design-system 文档（按第8节规则版本叠加）
+├─→ 更新 frontend/public/ui-spec.html
+└─→ 全局调整所有使用该组件的地方
+        ↓
+提交代码
+```
+
+### 9.3 具体操作要求
+
+#### 步骤1：发现冲突即停止
+当 UI 调整与 `design-system` 文档不一致时，**立即停止开发**，不擅自修改任何全局组件。
+
+#### 步骤2：展示实际样式（必须）
+向用户展示调整后的实际效果，方式包括：
+- 在现有页面临时应用调整，截图/录屏展示
+- 创建独立 HTML 演示文件
+- 部署开发环境预览链接
+
+展示内容必须包括：
+- 调整前后对比
+- 组件在不同状态下的表现（normal/hover/disabled等）
+- 与其他组件的组合效果
+
+#### 步骤3：获取用户确认（必须）
+使用以下格式获取用户明确确认：
+```
+[UI 调整确认]
+组件：xxx
+调整内容：xxx
+原因：与用户提出的 xxx 需求相关
+
+请确认：
+[ ] 同意调整，同步更新设计系统文档
+[ ] 维持现有设计，不调整
+[ ] 需要进一步修改（请说明）
+```
+
+#### 步骤4：用户确认后的同步更新
+
+**4.1 更新 design-system 文档**
+- 按第8节规则复制并叠加版本号（如 `v1.2 → v1.3`）
+- 在新版本上修改组件规格
+- 更新使用示例和变更说明
+
+**4.2 更新 ui-spec.html**
+同步修改 `frontend/public/ui-spec.html` 中对应组件的：
+- 样式定义
+- 示例代码
+- 交互演示
+
+**4.3 全局组件调整**
+使用以下命令查找所有使用该组件的位置：
+```bash
+# 查找组件使用
+grep -r "ComponentName" frontend/src/pages/ --include="*.vue"
+grep -r "class=\"xxx\"" frontend/src/pages/ --include="*.vue"
+
+# 批量替换（谨慎）
+sed -i 's/old-class/new-class/g' frontend/src/pages/admin/*/index.vue
+```
+
+创建修改清单，确保所有页面统一调整：
+| 页面路径 | 组件 | 修改内容 | 状态 |
+|---------|------|---------|------|
+| admin/accounts/index.vue | ElButton | 圆角 8px→12px | ✅ |
+| admin/sessions/index.vue | ElButton | 圆角 8px→12px | ✅ |
+
+### 9.4 文档关联关系（必须同步）
+
+```
+docs/design-system-v*.md (规范源头)
+    ↓
+frontend/public/ui-spec.html (交互式展示)
+    ↓
+frontend/src/style.css (全局样式覆盖)
+    ↓
+frontend/src/pages/**/*.vue (页面实现)
+```
+
+**变更时必须同步更新整个链路！**
+
+### 9.5 检查清单（每次 UI 调整后必须确认）
+
+- [ ] design-system 文档已更新（版本叠加）
+- [ ] ui-spec.html 已同步更新
+- [ ] 全局所有使用该组件的页面已调整
+- [ ] 变更记录在 changelog 中
+- [ ] 用户已确认最终效果
+
+### 9.6 违规处理
+
+如果发现以下情况，**立即回滚**并重新按流程执行：
+1. ⚠️ 未展示实际样式就修改全局组件
+2. ⚠️ 用户未确认就更新设计系统文档
+3. ⚠️ 只更新了部分页面，遗漏其他使用位置
+4. ⚠️ design-system 与 ui-spec.html 不一致
+
+### 9.7 提交信息格式
+
+UI 调整后的提交信息必须包含：
+```
+ui: 调整 Button 组件圆角规格
+
+- 按用户确认调整按钮圆角从 8px 改为 12px
+- 更新 design-system-v1.3.md
+- 更新 frontend/public/ui-spec.html
+- 全局调整 12 个页面中的按钮样式
+
+Refs: 用户确认 #xxx
+```
+
+---
+
+**最后更新**：2026-03-28  
+**版本**：v1.1（UI开发规范新增）
