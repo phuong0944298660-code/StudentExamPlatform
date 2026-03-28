@@ -11,7 +11,12 @@
     <el-row :gutter="16" class="stats-row">
       <el-col :span="8">
         <div class="stat-card warning">
-          <div class="stat-icon"><el-icon :size="32"><Bell /></el-icon></div>
+          <div class="stat-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 8A6 6 0 0 0 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="stat-info">
             <div class="stat-value">{{ stats.pending }}</div>
             <div class="stat-label">待处理申请</div>
@@ -20,7 +25,12 @@
       </el-col>
       <el-col :span="8">
         <div class="stat-card success">
-          <div class="stat-icon"><el-icon :size="32"><CircleCheck /></el-icon></div>
+          <div class="stat-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 4L12 14.01L9 11.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="stat-info">
             <div class="stat-value">{{ stats.completed }}</div>
             <div class="stat-label">已处理</div>
@@ -29,7 +39,13 @@
       </el-col>
       <el-col :span="8">
         <div class="stat-card info">
-          <div class="stat-icon"><el-icon :size="32"><TrendCharts /></el-icon></div>
+          <div class="stat-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="12" y1="20" x2="12" y2="10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="18" y1="20" x2="18" y2="4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="6" y1="20" x2="6" y2="16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="stat-info">
             <div class="stat-value">{{ stats.changed }}</div>
             <div class="stat-label">分数变更</div>
@@ -63,7 +79,7 @@
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleRecheck(row)">立即处理</el-button>
+            <el-button link type="primary" @click="handleRecheck(row)">立即处理</el-button>
           </template>
         </el-table-column>
       </el-table>

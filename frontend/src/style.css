@@ -27,6 +27,14 @@ body {
   font-weight: 500;
 }
 
+/* Link 按钮样式修复 - 不应有固定高度 */
+.el-button.is-link {
+  height: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
 .el-button--primary {
   background-color: #3B82F6 !important;
   border-color: #3B82F6 !important;

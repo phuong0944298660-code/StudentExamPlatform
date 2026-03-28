@@ -17,7 +17,14 @@
     <el-row :gutter="16" class="stats-row">
       <el-col :span="6">
         <div class="stat-card blue">
-          <div class="stat-icon"><el-icon :size="32"><User /></el-icon></div>
+          <div class="stat-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
           <div class="stat-info">
             <div class="stat-value">{{ monitorStats.total }}</div>
             <div class="stat-label">考生总数</div>
@@ -26,7 +33,12 @@
       </el-col>
       <el-col :span="6">
         <div class="stat-card green">
-          <div class="stat-icon"><el-icon :size="32"><VideoPlay /></el-icon></div>
+          <div class="stat-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="10 8 16 12 10 16 10 8" fill="white"/>
+              </svg>
+            </div>
           <div class="stat-info">
             <div class="stat-value">{{ monitorStats.online }}</div>
             <div class="stat-label">在线考生</div>
@@ -35,7 +47,12 @@
       </el-col>
       <el-col :span="6">
         <div class="stat-card orange">
-          <div class="stat-icon"><el-icon :size="32"><CircleCheck /></el-icon></div>
+          <div class="stat-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 4L12 14.01L9 11.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
           <div class="stat-info">
             <div class="stat-value">{{ monitorStats.submitted }}</div>
             <div class="stat-label">已交卷</div>
@@ -44,7 +61,13 @@
       </el-col>
       <el-col :span="6">
         <div class="stat-card red">
-          <div class="stat-icon"><el-icon :size="32"><Warning /></el-icon></div>
+          <div class="stat-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.29 3.86L1.82 18C1.64509 18.3024 1.55249 18.6453 1.55177 18.9945C1.55105 19.3437 1.64223 19.6871 1.81574 19.9903C1.98925 20.2934 2.23864 20.5451 2.53773 20.7193C2.83683 20.8935 3.17548 20.9838 3.52 21H20.48C20.8245 20.9838 21.1632 20.8935 21.4623 20.7193C21.7614 20.5451 22.0108 20.2934 22.1843 19.9903C22.3578 19.6871 22.4489 19.3437 22.4482 18.9945C22.4475 18.6453 22.3549 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15549C12.6817 2.98786 12.3437 2.90134 12 2.90134C11.6563 2.90134 11.3183 2.98786 11.0188 3.15549C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="9" x2="12" y2="13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="17" x2="12.01" y2="17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
           <div class="stat-info">
             <div class="stat-value">{{ monitorStats.abnormal }}</div>
             <div class="stat-label">异常掉线</div>
@@ -293,7 +316,15 @@ onUnmounted(() => { stopAutoRefresh() })
 .stat-card.green { background: linear-gradient(135deg, #10B981, #059669); }
 .stat-card.orange { background: linear-gradient(135deg, #F59E0B, #D97706); }
 .stat-card.red { background: linear-gradient(135deg, #EF4444, #DC2626); }
-.stat-icon { opacity: 0.8; }
+.stat-icon { 
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 .stat-value { font-size: 32px; font-weight: 700; line-height: 1; }
 .stat-label { font-size: 14px; opacity: 0.9; margin-top: 4px; }
 .session-card { margin-bottom: 24px; }
