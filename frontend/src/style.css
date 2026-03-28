@@ -35,6 +35,14 @@ body {
   background: transparent !important;
 }
 
+/* Text 按钮样式修复 */
+.el-button.is-text {
+  height: auto !important;
+  padding: 4px 8px !important;
+  background: transparent !important;
+  border: none !important;
+}
+
 .el-button--primary {
   background-color: #3B82F6 !important;
   border-color: #3B82F6 !important;
