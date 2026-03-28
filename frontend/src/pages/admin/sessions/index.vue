@@ -133,21 +133,23 @@
         </el-table-column>
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="editSession(row)">编辑</el-button>
-            <el-button link type="primary" @click="manageWhitelist(row)">白名单</el-button>
-            <el-dropdown trigger="click">
-              <el-button link type="primary">
-                更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item v-if="row.status === 'OPEN'" @click="extendTime(row)">全场延时</el-dropdown-item>
-                  <el-dropdown-item v-if="row.status === 'OPEN'" divided @click="forceClose(row)">强制收卷</el-dropdown-item>
-                  <el-dropdown-item v-if="row.status === 'FINISHED'" @click="publishScore(row)">成绩发布</el-dropdown-item>
-                  <el-dropdown-item divided type="danger" @click="deleteSession(row)">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <div class="table-actions">
+              <el-button link type="primary" @click="editSession(row)">编辑</el-button>
+              <el-button link type="primary" @click="manageWhitelist(row)">白名单</el-button>
+              <el-dropdown trigger="click">
+                <el-button link type="primary">
+                  更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-if="row.status === 'OPEN'" @click="extendTime(row)">全场延时</el-dropdown-item>
+                    <el-dropdown-item v-if="row.status === 'OPEN'" divided @click="forceClose(row)">强制收卷</el-dropdown-item>
+                    <el-dropdown-item v-if="row.status === 'FINISHED'" @click="publishScore(row)">成绩发布</el-dropdown-item>
+                    <el-dropdown-item divided type="danger" @click="deleteSession(row)">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -567,6 +569,14 @@ onMounted(() => {
 
 .table-card {
   margin-bottom: 20px;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .session-name-cell {

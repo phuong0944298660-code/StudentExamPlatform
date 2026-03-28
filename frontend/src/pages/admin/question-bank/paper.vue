@@ -93,21 +93,23 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="editPaper(row)">编辑</el-button>
-            <el-button link type="primary" @click="previewPaper(row)">预览</el-button>
-            <el-dropdown trigger="click">
-              <el-button link type="primary">
-                更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="publishPaper(row)" v-if="row.status === 'DRAFT'">发布</el-dropdown-item>
-                  <el-dropdown-item @click="copyPaper(row)">复制</el-dropdown-item>
-                  <el-dropdown-item @click="convertToHistory(row)" v-if="row.paperType === 'EXAM'">转为真题</el-dropdown-item>
-                  <el-dropdown-item divided type="danger" @click="deletePaper(row)">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <div class="table-actions">
+              <el-button link type="primary" @click="editPaper(row)">编辑</el-button>
+              <el-button link type="primary" @click="previewPaper(row)">预览</el-button>
+              <el-dropdown trigger="click">
+                <el-button link type="primary">
+                  更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="publishPaper(row)" v-if="row.status === 'DRAFT'">发布</el-dropdown-item>
+                    <el-dropdown-item @click="copyPaper(row)">复制</el-dropdown-item>
+                    <el-dropdown-item @click="convertToHistory(row)" v-if="row.paperType === 'EXAM'">转为真题</el-dropdown-item>
+                    <el-dropdown-item divided type="danger" @click="deletePaper(row)">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -285,6 +287,13 @@ onMounted(() => { loadData() })
 .filter-card { margin-bottom: 20px; }
 .filter-form { display: flex; flex-wrap: wrap; gap: 8px; }
 .table-card { margin-bottom: 20px; }
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: nowrap;
+}
 .paper-name-cell { display: flex; align-items: center; gap: 12px; }
 .paper-info { display: flex; flex-direction: column; gap: 4px; }
 .paper-name { font-size: 14px; font-weight: 500; color: #1E293B; }

@@ -101,23 +101,25 @@
             {{ row.lastLoginAt || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="editAccount(row)">编辑</el-button>
-            <el-button link type="primary" @click="viewDetail(row)">详情</el-button>
-            <el-dropdown trigger="click">
-              <el-button link type="primary">
-                更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
-              </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="resetPassword(row)">重置密码</el-dropdown-item>
-                  <el-dropdown-item v-if="row.status !== 'LOCKED'" @click="lockAccount(row)">锁定账号</el-dropdown-item>
-                  <el-dropdown-item v-if="row.status === 'LOCKED'" @click="unlockAccount(row)">解锁账号</el-dropdown-item>
-                  <el-dropdown-item divided type="danger" @click="deleteAccount(row)">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <div class="table-actions">
+              <el-button link type="primary" @click="editAccount(row)">编辑</el-button>
+              <el-button link type="primary" @click="viewDetail(row)">详情</el-button>
+              <el-dropdown trigger="click">
+                <el-button link type="primary">
+                  更多<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="resetPassword(row)">重置密码</el-dropdown-item>
+                    <el-dropdown-item v-if="row.status !== 'LOCKED'" @click="lockAccount(row)">锁定账号</el-dropdown-item>
+                    <el-dropdown-item v-if="row.status === 'LOCKED'" @click="unlockAccount(row)">解锁账号</el-dropdown-item>
+                    <el-dropdown-item divided type="danger" @click="deleteAccount(row)">删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -530,6 +532,14 @@ onMounted(() => {
 .username-text {
   font-size: 14px;
   color: #1E293B;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .pagination-wrapper {

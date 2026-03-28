@@ -27,12 +27,17 @@ body {
   font-weight: 500;
 }
 
-/* Link 按钮样式修复 - 不应有固定高度 */
+/* Link 按钮样式修复 - 不应有固定高度，悬停无底色 */
 .el-button.is-link {
   height: auto !important;
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
+}
+
+.el-button.is-link:hover {
+  background: transparent !important;
+  color: #2563EB !important;
 }
 
 /* Text 按钮样式修复 */
@@ -41,6 +46,11 @@ body {
   padding: 4px 8px !important;
   background: transparent !important;
   border: none !important;
+}
+
+.el-button.is-text:hover {
+  background: transparent !important;
+  color: #2563EB !important;
 }
 
 .el-button--primary {
