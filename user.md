@@ -40,7 +40,7 @@
 - 禁止在未收到用户人工明确要求的情况下自动提交到 `UAT` 或 `main` 分支
 
 ## 6. 架构文档治理规则
-- `docs/architecture.md` 用于约束项目目录结构规范、数据库结构（Schema）和 API 约定
+- `docs/architecture-v1.13.md` 用于约束项目目录结构规范、数据库结构（Schema）和 API 约定
 - 后续若目录结构规范、数据库结构、API 约定发生变化，必须先复制一份架构文档并迭代版本号（如 `architecture-v1.0.md -> architecture-v1.1.md`），仅在新版本上更新内容
 - 后续开发实现必须默认依据最新版本架构文档执行；如与历史文档冲突，以最新版本架构文档为准
 
@@ -50,7 +50,7 @@
 - 后续任何开发任务（前端、后端、数据库、服务、接口联调）都必须以最新版 `exam-platform-requirements-spec` 文档为准执行
 - 若开发内容与旧版文档冲突，以最新版需求文档为唯一准入依据
 - 如果涉及系统架构变更，则同步更新 `architecture.md` 文档，禁止直接覆盖历史版本
-- 当前需求基线文件更新为 `docs/exam-platform-requirements-spec-v1.4.md`
+- 当前需求基线文件更新为 `docs/exam-platform-requirements-spec-v1.7.md`
 
 ## 8. UI 与技术栈执行规则
 - 前端开发必须遵循 `docs/design-system-v1.4.md`（最新版本）
