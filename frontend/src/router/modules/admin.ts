@@ -53,6 +53,25 @@ const adminRoutes: RouteRecordRaw[] = [
         component: () => import('../../pages/admin/import/completion.vue'),
         meta: { title: '名单补全', icon: 'Edit' }
       },
+      // 关联管理
+      {
+        path: 'import/relation',
+        name: 'AdminRelation',
+        component: () => import('../../pages/admin/import/relation/index.vue'),
+        meta: { title: '关联列表', icon: 'Connection' }
+      },
+      {
+        path: 'import/relation/batch',
+        name: 'AdminRelationBatch',
+        component: () => import('../../pages/admin/import/relation/batch.vue'),
+        meta: { title: '批量关联', icon: 'DocumentAdd' }
+      },
+      {
+        path: 'import/relation/adjust',
+        name: 'AdminRelationAdjust',
+        component: () => import('../../pages/admin/import/relation/adjust.vue'),
+        meta: { title: '关联调整', icon: 'Switch' }
+      },
       // 题库管理
       {
         path: 'question-bank',

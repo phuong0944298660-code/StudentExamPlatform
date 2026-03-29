@@ -1,13 +1,14 @@
 // 管理员端假数据
 
-import type { 
-  DashboardStats, 
-  AccountItem, 
-  ActivationCode, 
+import type {
+  DashboardStats,
+  AccountItem,
+  ActivationCode,
   ImportRecord,
   QuestionBank,
   ExamSession,
-  ExamPaper
+  ExamPaper,
+  TeacherStudentRelation
 } from '../types'
 
 // 看板统计数据
@@ -17,6 +18,12 @@ export const mockDashboardStats: DashboardStats = {
   activeSessions: 3,
   pendingReviews: 156
 }
+
+// 教师角色配置（支持双角色）
+export const mockTeacherRoles = [
+  { userId: 5, roles: ['TEACHER', 'REVIEWER'] }, // 陈老师 - 双角色
+  { userId: 6, roles: ['TEACHER'] }, // 刘老师 - 仅指导老师
+]
 
 // 账号列表
 export const mockAccounts: AccountItem[] = [
@@ -88,4 +95,12 @@ export const mockTodoList = [
   { id: 2, title: '配置成绩公布时间', priority: 'high', deadline: '2026-03-29', status: 'pending' },
   { id: 3, title: '处理2个复查申请', priority: 'medium', deadline: '2026-03-30', status: 'pending' },
   { id: 4, title: '导出模拟赛成绩', priority: 'low', deadline: '2026-04-01', status: 'pending' },
+]
+
+// 教师-学生关联关系
+export const mockTeacherStudentRelations: TeacherStudentRelation[] = [
+  { id: 1, teacherId: 5, teacherName: '陈老师', teacherStage: 'PRIMARY', studentId: 1, studentName: '张三', studentIdCard: '450102201201011234', studentStage: 'PRIMARY', relationType: 'MANUAL', createdAt: '2026-03-20 10:30:00', updatedAt: '2026-03-20 10:30:00' },
+  { id: 2, teacherId: 5, teacherName: '陈老师', teacherStage: 'PRIMARY', studentId: 4, studentName: '赵六', studentIdCard: '450102201204041234', studentStage: 'PRIMARY', relationType: 'BATCH', createdAt: '2026-03-20 10:30:00', updatedAt: '2026-03-20 10:30:00' },
+  { id: 3, teacherId: 6, teacherName: '刘老师', teacherStage: 'MIDDLE', studentId: 2, studentName: '李四', studentIdCard: '450102201202021234', studentStage: 'MIDDLE', relationType: 'MANUAL', createdAt: '2026-03-20 11:00:00', updatedAt: '2026-03-20 11:00:00' },
+  { id: 4, teacherId: 6, teacherName: '刘老师', teacherStage: 'MIDDLE', studentId: 8, studentName: '周八', studentIdCard: '450102201208081234', studentStage: 'MIDDLE', relationType: 'MANUAL', createdAt: '2026-03-21 09:00:00', updatedAt: '2026-03-21 09:00:00' },
 ]

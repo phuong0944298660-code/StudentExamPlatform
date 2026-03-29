@@ -90,6 +90,21 @@
             {{ row.stage === 'PRIMARY' ? '小学' : '初中' }}
           </template>
         </el-table-column>
+        <el-table-column label="角色" width="140" v-if="showRoleColumn">
+          <template #default="{ row }">
+            <el-tooltip v-if="row.accountType === 'STAFF'" :content="getRoleTooltip(row.id)" placement="top">
+              <div class="role-tags">
+                <el-tag v-for="role in getAccountRoles(row.id)" :key="role" size="small" class="mr-1">
+                  {{ getRoleText(role) }}
+                </el-tag>
+                <el-button v-if="row.accountType === 'STAFF'" link type="primary" size="small" @click="showRoleDialog(row)">
+                  配置
+                </el-button>
+              </div>
+            </el-tooltip>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" width="90">
           <template #default="{ row }">
             <status-tag :status="row.status" />
@@ -220,15 +235,52 @@
         <el-button type="primary" @click="submitImport" :loading="importLoading">开始导入</el-button>
       </template>
     </el-dialog>
+
+    <!-- 角色配置弹窗 -->
+    <el-dialog
+      v-model="roleDialogVisible"
+      :title="`配置角色 - ${currentRoleUser?.realName || ''}`"
+      width="500px"
+    >
+      <el-alert
+        title="请为该教师账号配置角色权限"
+        type="info"
+        :closable="false"
+        class="mb-4"
+      />
+      <el-form :model="roleForm" label-width="100px">
+        <el-form-item label="角色权限">
+          <el-checkbox-group v-model="roleForm.roles">
+            <el-checkbox label="TEACHER">指导老师（可组卷、查看学情）</el-checkbox>
+            <el-checkbox label="REVIEWER">评卷老师（可评卷、处理复查）</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item>
+          <div class="role-tips">
+            <p>角色说明：</p>
+            <ul>
+              <li>指导老师：可创建练习卷、查看所带学生学情</li>
+              <li>评卷老师：可对主观题进行评分、处理复查申请</li>
+              <li>可同时拥有两个角色，权限叠加</li>
+            </ul>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="roleDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitRoleConfig">确认配置</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { UserFilled } from '@element-plus/icons-vue'
 import StatusTag from '../../../components/common/StatusTag.vue'
-import { mockAccounts } from '../../../mock/admin'
-import type { AccountItem } from '../../../types'
+import { mockAccounts, mockTeacherRoles } from '../../../mock/admin'
+import type { AccountItem, TeacherRole } from '../../../types'
 
 // 筛选表单
 const filterForm = reactive({
@@ -269,6 +321,19 @@ const submitLoading = ref(false)
 const importDialogVisible = ref(false)
 const importLoading = ref(false)
 const importFile = ref<File | null>(null)
+
+// 角色配置弹窗
+const roleDialogVisible = ref(false)
+const roleForm = reactive({
+  userId: 0,
+  roles: [] as TeacherRole[]
+})
+const currentRoleUser = ref<AccountItem | null>(null)
+
+// 是否显示角色列（当筛选教师账号或全部时显示）
+const showRoleColumn = computed(() => {
+  return !filterForm.accountType || filterForm.accountType === 'STAFF'
+})
 
 // 表单校验规则
 const rules = {
@@ -417,7 +482,7 @@ const deleteAccount = (row: AccountItem) => {
   ElMessageBox.confirm(
     `确定要删除 ${row.realName} 的账号吗？此操作不可恢复！`,
     '确认删除',
-    { type: 'danger' }
+    { type: 'error' }
   ).then(() => {
     accountList.value = accountList.value.filter(item => item.id !== row.id)
     ElMessage.success('删除成功')
@@ -472,6 +537,65 @@ const submitImport = () => {
     importLoading.value = false
     loadData()
   }, 1500)
+}
+
+// 获取账号角色
+const getAccountRoles = (userId: number): TeacherRole[] => {
+  const roleConfig = mockTeacherRoles.find(r => r.userId === userId)
+  return roleConfig?.roles || []
+}
+
+// 获取角色显示文本
+const getRoleText = (role: TeacherRole): string => {
+  const textMap: Record<string, string> = {
+    'TEACHER': '指导',
+    'REVIEWER': '评卷',
+    'TEACHER_REVIEWER': '双角色'
+  }
+  return textMap[role] || role
+}
+
+// 获取角色tooltip
+const getRoleTooltip = (userId: number): string => {
+  const roles = getAccountRoles(userId)
+  if (roles.includes('TEACHER') && roles.includes('REVIEWER')) {
+    return '该账号同时拥有指导老师和评卷老师权限'
+  } else if (roles.includes('TEACHER')) {
+    return '该账号为指导老师'
+  } else if (roles.includes('REVIEWER')) {
+    return '该账号为评卷老师'
+  }
+  return '点击配置角色权限'
+}
+
+// 显示角色配置弹窗
+const showRoleDialog = (row: AccountItem) => {
+  if (row.accountType !== 'STAFF') {
+    ElMessage.warning('只有教师账号可以配置角色')
+    return
+  }
+  currentRoleUser.value = row
+  roleForm.userId = row.id
+  roleForm.roles = [...getAccountRoles(row.id)]
+  roleDialogVisible.value = true
+}
+
+// 提交角色配置
+const submitRoleConfig = () => {
+  const userId = roleForm.userId
+  const existingConfig = mockTeacherRoles.find(r => r.userId === userId)
+
+  if (existingConfig) {
+    existingConfig.roles = [...roleForm.roles]
+  } else {
+    mockTeacherRoles.push({
+      userId: userId,
+      roles: [...roleForm.roles]
+    })
+  }
+
+  ElMessage.success('角色配置成功')
+  roleDialogVisible.value = false
 }
 
 onMounted(() => {

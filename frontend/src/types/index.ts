@@ -9,6 +9,24 @@ export type AccountType = 'PRACTICE' | 'EXAM' | 'STAFF'
 // 账号状态
 export type AccountStatus = 'ENABLED' | 'DISABLED' | 'LOCKED'
 
+// 教师角色类型（支持多角色）
+export type TeacherRole = 'TEACHER' | 'REVIEWER' | 'TEACHER_REVIEWER'
+
+// 教师-学生关联关系
+export interface TeacherStudentRelation {
+  id: number
+  teacherId: number
+  teacherName: string
+  teacherStage: Stage
+  studentId: number
+  studentName: string
+  studentIdCard: string
+  studentStage: Stage
+  relationType: 'AUTO' | 'MANUAL' | 'BATCH'
+  createdAt: string
+  updatedAt: string
+}
+
 // 激活码状态
 export type ActivationCodeStatus = 'NOT_EFFECTIVE' | 'ACTIVE' | 'USED' | 'EXPIRED'
 
