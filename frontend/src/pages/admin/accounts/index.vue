@@ -119,13 +119,12 @@
           </template>
         </el-table-column>
         <!-- 教师账号显示带生数 -->
-        <el-table-column label="带生数" width="120" v-if="showStudentCountColumn">
+        <el-table-column label="带生数" width="140" v-if="showStudentCountColumn">
           <template #default="{ row }">
-            <div v-if="row.accountType === 'STAFF'">
-              <el-badge :value="getTeacherStudentCount(row.id)" :max="99" type="primary">
-                <el-button link type="primary" size="small" @click="showTeacherStudents(row)">查看</el-button>
-              </el-badge>
-              <el-button link type="warning" size="small" @click="showBatchTransferDialog(row)" class="ml-2">转移</el-button>
+            <div v-if="row.accountType === 'STAFF'" class="student-count-cell">
+              <el-tag size="small" type="primary">{{ getTeacherStudentCount(row.id) }}人</el-tag>
+              <el-button link type="primary" size="small" @click="showTeacherStudents(row)">查看</el-button>
+              <el-button link type="warning" size="small" @click="showBatchTransferDialog(row)">转移</el-button>
             </div>
             <span v-else>-</span>
           </template>
@@ -1044,5 +1043,11 @@ onMounted(() => {
 
 .mb-4 {
   margin-bottom: 16px;
+}
+
+.student-count-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 </style>
