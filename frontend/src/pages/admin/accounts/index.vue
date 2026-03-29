@@ -105,6 +105,31 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
+        <!-- 训练账号显示指导教师 -->
+        <el-table-column label="指导教师" width="160" v-if="showTeacherColumn">
+          <template #default="{ row }">
+            <div v-if="row.accountType === 'PRACTICE'">
+              <template v-if="getStudentTeacher(row.id)">
+                <el-tag size="small" type="success">{{ getStudentTeacher(row.id)?.teacherName }}</el-tag>
+                <el-button link type="primary" size="small" @click="showChangeTeacherDialog(row)">更换</el-button>
+              </template>
+              <el-button v-else link type="primary" size="small" @click="showAssignTeacherDialog(row)">分配教师</el-button>
+            </div>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <!-- 教师账号显示带生数 -->
+        <el-table-column label="带生数" width="120" v-if="showStudentCountColumn">
+          <template #default="{ row }">
+            <div v-if="row.accountType === 'STAFF'">
+              <el-badge :value="getTeacherStudentCount(row.id)" :max="99" type="primary">
+                <el-button link type="primary" size="small" @click="showTeacherStudents(row)">查看</el-button>
+              </el-badge>
+              <el-button link type="warning" size="small" @click="showBatchTransferDialog(row)" class="ml-2">转移</el-button>
+            </div>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" width="90">
           <template #default="{ row }">
             <status-tag :status="row.status" />
@@ -271,6 +296,157 @@
         <el-button type="primary" @click="submitRoleConfig">确认配置</el-button>
       </template>
     </el-dialog>
+
+    <!-- 分配教师弹窗 -->
+    <el-dialog
+      v-model="assignTeacherDialogVisible"
+      :title="`分配教师 - ${currentStudent?.realName || ''}`"
+      width="500px"
+    >
+      <el-form label-width="100px">
+        <el-form-item label="学生">
+          <el-input :model-value="currentStudent?.realName" disabled />
+        </el-form-item>
+        <el-form-item label="学段">
+          <el-tag>{{ currentStudent?.stage === 'PRIMARY' ? '小学' : '初中' }}</el-tag>
+        </el-form-item>
+        <el-form-item label="指导教师">
+          <el-select v-model="selectedTeacherId" placeholder="选择教师" filterable style="width: 100%">
+            <el-option
+              v-for="t in teacherOptions.filter(t => t.stage === currentStudent?.stage)"
+              :key="t.id"
+              :label="t.name"
+              :value="t.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="assignTeacherDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitAssignTeacher" :disabled="!selectedTeacherId">确认分配</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 更换教师弹窗 -->
+    <el-dialog
+      v-model="changeTeacherDialogVisible"
+      :title="`更换教师 - ${currentStudent?.realName || ''}`"
+      width="500px"
+    >
+      <el-alert
+        :title="`当前教师: ${getStudentTeacher(currentStudent?.id || 0)?.teacherName || ''}`"
+        type="info"
+        :closable="false"
+        class="mb-4"
+      />
+      <el-form label-width="100px">
+        <el-form-item label="新指导教师">
+          <el-select v-model="selectedTeacherId" placeholder="选择新教师" filterable style="width: 100%">
+            <el-option
+              v-for="t in teacherOptions.filter(t => t.stage === currentStudent?.stage && t.id !== getStudentTeacher(currentStudent?.id || 0)?.teacherId)"
+              :key="t.id"
+              :label="t.name"
+              :value="t.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="changeTeacherDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitChangeTeacher" :disabled="!selectedTeacherId">确认更换</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 教师学生列表弹窗 -->
+    <el-dialog
+      v-model="teacherStudentsDialogVisible"
+      :title="`${currentTeacher?.realName} 的学生列表（${teacherStudentList.length}人）`"
+      width="700px"
+    >
+      <el-table :data="teacherStudentList" stripe max-height="400">
+        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="studentName" label="学生姓名" width="120" />
+        <el-table-column prop="studentIdCard" label="身份证号" min-width="180" />
+        <el-table-column prop="relationType" label="关联方式" width="100">
+          <template #default="{ row }">
+            <el-tag size="small">{{ row.relationType === 'MANUAL' ? '手工' : '批量' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="关联时间" width="160" />
+      </el-table>
+      <template #footer>
+        <el-button @click="teacherStudentsDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="teacherStudentsDialogVisible = false; showBatchTransferDialog(currentTeacher!)">批量转移</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 批量转移弹窗 -->
+    <el-dialog
+      v-model="batchTransferDialogVisible"
+      :title="`批量转移学生 - ${currentTeacher?.realName}`"
+      width="800px"
+    >
+      <el-alert
+        title="请选择要转移的学生和目标教师"
+        type="info"
+        :closable="false"
+        class="mb-4"
+      />
+      <el-row :gutter="20">
+        <el-col :span="14">
+          <el-card>
+            <template #header>
+              <span>选择学生（已选 {{ transferSelectedStudents.length }} 人）</span>
+            </template>
+            <el-table
+              :data="teacherStudentList"
+              stripe
+              height="300"
+              @selection-change="transferSelectedStudents = $event"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column prop="studentName" label="学生姓名" width="120" />
+              <el-table-column prop="studentIdCard" label="身份证号" />
+            </el-table>
+          </el-card>
+        </el-col>
+        <el-col :span="10">
+          <el-card>
+            <template #header>
+              <span>目标教师</span>
+            </template>
+            <el-form label-width="80px">
+              <el-form-item label="原教师">
+                <el-input :model-value="currentTeacher?.realName" disabled />
+              </el-form-item>
+              <el-form-item label="学段">
+                <el-tag>{{ currentTeacher?.stage === 'PRIMARY' ? '小学' : '初中' }}</el-tag>
+              </el-form-item>
+              <el-form-item label="新教师">
+                <el-select v-model="transferTargetTeacherId" placeholder="选择新教师" style="width: 100%">
+                  <el-option
+                    v-for="t in getAvailableTargetTeachers"
+                    :key="t.id"
+                    :label="t.realName"
+                    :value="t.id"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </el-card>
+        </el-col>
+      </el-row>
+      <template #footer>
+        <el-button @click="batchTransferDialogVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="submitBatchTransfer"
+          :disabled="transferSelectedStudents.length === 0 || !transferTargetTeacherId"
+        >
+          确认转移（{{ transferSelectedStudents.length }}人）
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -279,8 +455,8 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import StatusTag from '../../../components/common/StatusTag.vue'
-import { mockAccounts, mockTeacherRoles } from '../../../mock/admin'
-import type { AccountItem, TeacherRole } from '../../../types'
+import { mockAccounts, mockTeacherRoles, mockTeacherStudentRelations } from '../../../mock/admin'
+import type { AccountItem, TeacherRole, TeacherStudentRelation } from '../../../types'
 
 // 筛选表单
 const filterForm = reactive({
@@ -330,8 +506,158 @@ const roleForm = reactive({
 })
 const currentRoleUser = ref<AccountItem | null>(null)
 
+// 分配/更换教师弹窗
+const assignTeacherDialogVisible = ref(false)
+const changeTeacherDialogVisible = ref(false)
+const teacherStudentsDialogVisible = ref(false)
+const batchTransferDialogVisible = ref(false)
+const currentStudent = ref<AccountItem | null>(null)
+const currentTeacher = ref<AccountItem | null>(null)
+const selectedTeacherId = ref<number | null>(null)
+const teacherStudentList = ref<TeacherStudentRelation[]>([])
+const transferSelectedStudents = ref<TeacherStudentRelation[]>([])
+const transferTargetTeacherId = ref<number | null>(null)
+
+// 教师选项（同段段的教师）
+const teacherOptions = computed(() => {
+  return mockAccounts.filter(a => a.accountType === 'STAFF').map(t => ({
+    id: t.id,
+    name: t.realName,
+    stage: t.stage
+  }))
+})
+
+// 获取学生关联的教师
+const getStudentTeacher = (studentId: number) => {
+  return mockTeacherStudentRelations.find(r => r.studentId === studentId)
+}
+
+// 获取教师带生数
+const getTeacherStudentCount = (teacherId: number) => {
+  return mockTeacherStudentRelations.filter(r => r.teacherId === teacherId).length
+}
+
+// 显示分配教师弹窗
+const showAssignTeacherDialog = (row: AccountItem) => {
+  currentStudent.value = row
+  selectedTeacherId.value = null
+  assignTeacherDialogVisible.value = true
+}
+
+// 显示更换教师弹窗
+const showChangeTeacherDialog = (row: AccountItem) => {
+  currentStudent.value = row
+  const currentRelation = getStudentTeacher(row.id)
+  selectedTeacherId.value = currentRelation?.teacherId || null
+  changeTeacherDialogVisible.value = true
+}
+
+// 显示教师学生列表弹窗
+const showTeacherStudents = (row: AccountItem) => {
+  currentTeacher.value = row
+  teacherStudentList.value = mockTeacherStudentRelations.filter(r => r.teacherId === row.id)
+  teacherStudentsDialogVisible.value = true
+}
+
+// 显示批量转移弹窗
+const showBatchTransferDialog = (row: AccountItem) => {
+  currentTeacher.value = row
+  teacherStudentList.value = mockTeacherStudentRelations.filter(r => r.teacherId === row.id)
+  transferSelectedStudents.value = []
+  transferTargetTeacherId.value = null
+  batchTransferDialogVisible.value = true
+}
+
+// 提交分配教师
+const submitAssignTeacher = () => {
+  if (!selectedTeacherId.value || !currentStudent.value) return
+
+  const teacher = mockAccounts.find(a => a.id === selectedTeacherId.value)
+  if (!teacher) return
+
+  // 添加到关联列表
+  mockTeacherStudentRelations.push({
+    id: Date.now(),
+    teacherId: teacher.id,
+    teacherName: teacher.realName,
+    teacherStage: teacher.stage!,
+    studentId: currentStudent.value.id,
+    studentName: currentStudent.value.realName,
+    studentIdCard: currentStudent.value.username,
+    studentStage: currentStudent.value.stage,
+    relationType: 'MANUAL',
+    createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' ')
+  })
+
+  ElMessage.success(`已成功将 ${currentStudent.value.realName} 分配给 ${teacher.realName}`)
+  assignTeacherDialogVisible.value = false
+}
+
+// 提交更换教师
+const submitChangeTeacher = () => {
+  if (!selectedTeacherId.value || !currentStudent.value) return
+
+  const relation = mockTeacherStudentRelations.find(r => r.studentId === currentStudent.value!.id)
+  const newTeacher = mockAccounts.find(a => a.id === selectedTeacherId.value)
+
+  if (!relation || !newTeacher) return
+
+  // 更新关联
+  relation.teacherId = newTeacher.id
+  relation.teacherName = newTeacher.realName
+  relation.teacherStage = newTeacher.stage!
+  relation.updatedAt = new Date().toISOString().slice(0, 19).replace('T', ' ')
+
+  ElMessage.success(`已成功将 ${currentStudent.value.realName} 更换到 ${newTeacher.realName}`)
+  changeTeacherDialogVisible.value = false
+}
+
+// 提交批量转移
+const submitBatchTransfer = () => {
+  if (!transferTargetTeacherId.value || transferSelectedStudents.value.length === 0) return
+
+  const targetTeacher = mockAccounts.find(a => a.id === transferTargetTeacherId.value)
+  if (!targetTeacher) return
+
+  // 更新所有选中学生的关联
+  transferSelectedStudents.value.forEach(student => {
+    const relation = mockTeacherStudentRelations.find(r => r.studentId === student.studentId)
+    if (relation) {
+      relation.teacherId = targetTeacher.id
+      relation.teacherName = targetTeacher.realName
+      relation.teacherStage = targetTeacher.stage!
+      relation.updatedAt = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    }
+  })
+
+  ElMessage.success(`已成功转移 ${transferSelectedStudents.value.length} 名学生到 ${targetTeacher.realName}`)
+  batchTransferDialogVisible.value = false
+  teacherStudentList.value = mockTeacherStudentRelations.filter(r => r.teacherId === currentTeacher.value!.id)
+}
+
+// 获取可用目标教师（排除当前教师，同段段）
+const getAvailableTargetTeachers = computed(() => {
+  if (!currentTeacher.value) return []
+  return mockAccounts.filter(a =>
+    a.accountType === 'STAFF' &&
+    a.id !== currentTeacher.value!.id &&
+    a.stage === currentTeacher.value!.stage
+  )
+})
+
 // 是否显示角色列（当筛选教师账号或全部时显示）
 const showRoleColumn = computed(() => {
+  return !filterForm.accountType || filterForm.accountType === 'STAFF'
+})
+
+// 是否显示指导教师列（当筛选训练账号或全部时显示）
+const showTeacherColumn = computed(() => {
+  return !filterForm.accountType || filterForm.accountType === 'PRACTICE'
+})
+
+// 是否显示带生数列（当筛选教师账号或全部时显示）
+const showStudentCountColumn = computed(() => {
   return !filterForm.accountType || filterForm.accountType === 'STAFF'
 })
 
