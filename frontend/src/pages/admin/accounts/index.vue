@@ -140,6 +140,32 @@
             {{ row.lastLoginAt || '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="激活码" width="180">
+          <template #default="{ row }">
+            <div v-if="getAccountActivationCodes(row.id).length > 0">
+              <div class="activation-codes-container">
+                <el-tag
+                  v-for="code in getAccountActivationCodes(row.id).slice(0, 2)"
+                  :key="code.id"
+                  size="small"
+                  class="mr-1"
+                >
+                  {{ code.code }}
+                </el-tag>
+                <el-button
+                  v-if="getAccountActivationCodes(row.id).length > 2"
+                  link
+                  type="primary"
+                  size="small"
+                  @click="showActivationCodesDetail(row)"
+                >
+                  +{{ getAccountActivationCodes(row.id).length - 2 }} 更多
+                </el-button>
+              </div>
+            </div>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <div class="table-actions">
@@ -446,6 +472,42 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 查看激活码详情弹窗 -->
+    <el-dialog
+      v-model="activationCodesDialogVisible"
+      :title="`${currentAccountForActivationCodes?.realName} 的激活码列表`"
+      width="600px"
+    >
+      <el-table :data="currentAccountActivationCodesList" stripe max-height="400">
+        <el-table-column prop="code" label="激活码" width="200" />
+        <el-table-column prop="stage" label="学段" width="80">
+          <template #default="{ row }">
+            {{ row.stage === 'PRIMARY' ? '小学' : '初中' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="targetRole" label="目标角色" width="90">
+          <template #default="{ row }">
+            <el-tag :type="row.targetRole === 'TEACHER' ? 'primary' : 'success'" size="small">
+              {{ row.targetRole === 'TEACHER' ? '教师' : '学生' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="100">
+          <template #default="{ row }">
+            <status-tag :status="row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="usedAt" label="使用时间" width="160">
+          <template #default="{ row }">
+            {{ row.usedAt || '-' }}
+          </template>
+        </el-table-column>
+      </el-table>
+      <template #footer>
+        <el-button @click="activationCodesDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -454,8 +516,8 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import StatusTag from '../../../components/common/StatusTag.vue'
-import { mockAccounts, mockTeacherRoles, mockTeacherStudentRelations } from '../../../mock/admin'
-import type { AccountItem, TeacherRole, TeacherStudentRelation } from '../../../types'
+import { mockAccounts, mockTeacherRoles, mockTeacherStudentRelations, mockActivationCodes } from '../../../mock/admin'
+import type { AccountItem, TeacherRole, TeacherStudentRelation, ActivationCode } from '../../../types'
 
 // 筛选表单
 const filterForm = reactive({
@@ -659,6 +721,11 @@ const showTeacherColumn = computed(() => {
 const showStudentCountColumn = computed(() => {
   return !filterForm.accountType || filterForm.accountType === 'STAFF'
 })
+
+// 激活码详情相关
+const activationCodesDialogVisible = ref(false)
+const currentAccountForActivationCodes = ref<AccountItem | null>(null)
+const currentAccountActivationCodesList = ref<ActivationCode[]>([])
 
 // 表单校验规则
 const rules = {
@@ -923,6 +990,18 @@ const submitRoleConfig = () => {
   roleDialogVisible.value = false
 }
 
+// 获取账号关联的激活码列表
+const getAccountActivationCodes = (accountId: number): ActivationCode[] => {
+  return mockActivationCodes.filter(code => code.usedById === accountId)
+}
+
+// 显示激活码详情弹窗
+const showActivationCodesDetail = (row: AccountItem) => {
+  currentAccountForActivationCodes.value = row
+  currentAccountActivationCodesList.value = getAccountActivationCodes(row.id)
+  activationCodesDialogVisible.value = true
+}
+
 onMounted(() => {
   loadData()
 })
@@ -1049,5 +1128,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.activation-codes-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mr-1 {
+  margin-right: 8px;
 }
 </style>
